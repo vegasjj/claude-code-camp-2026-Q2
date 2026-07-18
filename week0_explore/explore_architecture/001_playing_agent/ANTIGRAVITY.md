@@ -6,6 +6,7 @@ The MUD is running at localhost on port 4000 and can be accessed using
 Netcat.
 
 Player credentials:
+
 - Username: dummy
 - Password: helloworld
 
