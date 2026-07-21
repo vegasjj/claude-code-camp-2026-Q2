@@ -26,6 +26,7 @@ The specific Agent Architectures studied here are:
 ## Technical Uncertainty
 
 - Confirmation is needed to assert weather or not a coding harness is efficient or productive enough to handle a non-coding workload (like navigating a text based game).
+- It is not clear how and LLM/agent could take on different personas (newbie, veteran, casual) and report accordingly the player experience and posibly pain points in the real world.
 - It's not known if LLM's model's thinking if sufficient to hold the memory context to drive decisions pertinent to our specific use case.
 - Is unclear is a coding harness can interface with a MUD without specialized tooling of SDK to manage network sessions.
 - Due to changes in Google tooling, Gemini CLI can't be used with subscriptions so is necessary to change to Antigravity CLI and assert if is a sufficient agentic harness.
@@ -33,8 +34,9 @@ The specific Agent Architectures studied here are:
 ## Technical Hypotheses
 
 - Based on my own experience, issues might arise when the coding harness try to navigate the MUD without a specialized interface or defined API as the commands to be input need run on a live monitored protocol like [Netcat](https://linuxize.com/post/netcat-nc-command-with-examples/).
+- The reasoning needed to identify pain points according to the players level or persona might prove challenging to flesh out and the execution variant if not properly handled so the data is useful to assert the game's experience.
 - I think that a specialized agentic loop is the only feasible is the only Agent Architecture capable to handle our use-case as generic models memory might not be capable enough to hold the world data and navigate the MUD efficiently.
-- As Antigravity CLI is a relatively new tool it might still be polished and not sufficient to be use as a production coding harness.
+- As Antigravity CLI is a relatively new tool it might still need polishing and not sufficient to be use as a production coding harness.
 
 ## Technical Observations
 
@@ -275,6 +277,7 @@ In the end, the agent found the bakery, but event if only used a single script t
 ## Technical Conclusions
 
 - Plain and skills agents can successfully connect and navigate the MUD even if is not efficient enough due to interface limitations that need to be polished for they be considered to production.
+- It seems that no matter what, deep knowledge of the MUD is necessary to know where are the pain points and been able to "tell the agent" without spelling it so it remain efficient, deterministic and cost-effective.
 - Specialized memory need to be setup for efficient navigation and world data processing.
 - The implementation of specialized agentic loops seems to be the only way to handle MUD connection and navigation efficiently so this need to be explored further.
 - Antigravity CLI seems to be a capable coding harness and proved functional and practical for our use case.
