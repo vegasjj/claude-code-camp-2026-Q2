@@ -1,0 +1,12 @@
+tasks:
+  player:
+    provider: openai
+    model: gpt-5.4-nano
+    prompt_override:
+      system: true
+
+mud:
+  host: localhost
+  port: 4000
+  username: dummy
+  password: helloworld
