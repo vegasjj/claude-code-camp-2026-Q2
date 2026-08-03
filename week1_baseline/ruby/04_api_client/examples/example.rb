@@ -44,6 +44,12 @@ when "openai"
     api_key: ENV.fetch("OPENAI_API_KEY"),
     model:   model
   )
+when "azure_foundry"
+  Boukensha::Backends::AzureFoundry.new(
+    api_key:  ENV.fetch("AZURE_OPENAI_API_KEY"),
+    endpoint: ENV.fetch("AZURE_OPENAI_ENDPOINT"),
+    model:    model
+  )
 when "gemini"
   Boukensha::Backends::Gemini.new(
     api_key: ENV.fetch("GEMINI_API_KEY"),

@@ -20,7 +20,7 @@ The API Client takes the payload assembled by `PromptBuilder` and sends it to th
 |---|---|
 | `lib/boukensha/errors.rb` | Added `ApiError` for failed HTTP requests |
 | `lib/boukensha/config.rb` | Reads `tasks.player` instead of top-level provider/model settings |
-| `lib/boukensha/backends/*.rb` | Backends now own supported model tables with context windows and cost metadata |
+| `lib/boukensha/backends/*.rb` | Backends (Anthropic, AzureFoundry, Gemini, Ollama, OllamaCloud, OpenAI) now own supported model tables with context windows and cost metadata |
 
 ## How It Works
 
