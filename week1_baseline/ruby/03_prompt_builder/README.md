@@ -30,6 +30,7 @@ context records the task that the prompt is being built for.
 | `lib/boukensha/backends/ollama.rb` | Serializes context into the Ollama API format |
 | `lib/boukensha/backends/ollama_cloud.rb` | Serializes context into the Ollama Cloud API format |
 | `lib/boukensha/backends/openai.rb` | Serializes context into the OpenAI Chat Completions format |
+| `lib/boukensha/backends/azure_foundry.rb` | Serializes context into the Azure OpenAI Responses API format |
 | `lib/boukensha/backends/gemini.rb` | Serializes context into the Gemini `generateContent` format |
 
 ## How It Works
@@ -104,6 +105,13 @@ models are listed in `Boukensha::Backends::OllamaCloud::MODELS`.
 Talks to `https://api.openai.com/v1/chat/completions`. 
 Requires an `OPENAI_API_KEY`. Supported models are listed in
 `Boukensha::Backends::OpenAI::MODELS`.
+
+### Boukensha::Backends::AzureFoundry
+
+Talks to `https://{resource}.openai.azure.com/openai/v1/responses` using the
+Responses API. Requires `AZURE_OPENAI_API_KEY` and `AZURE_OPENAI_ENDPOINT`
+environment variables. Supported models are listed in
+`Boukensha::Backends::AzureFoundry::MODELS`.
 
 ### Boukensha::Backends::Gemini
 

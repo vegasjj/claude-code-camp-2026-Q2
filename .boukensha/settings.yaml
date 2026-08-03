@@ -1,6 +1,6 @@
 tasks:
   player:
-    provider: openai
+    provider: azure_foundry
     model: gpt-5.4-mini
     prompt_override:
       system: true
