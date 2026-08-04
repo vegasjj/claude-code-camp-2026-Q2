@@ -1,3 +1,4 @@
+require "json"
 require_relative "base"
 
 module Boukensha
@@ -38,6 +39,26 @@ module Boukensha
               call_id: msg.tool_use_id,
               output: msg.content
             }
+          when :assistant
+            if msg.content.is_a?(String)
+              input << { role: "assistant", content: msg.content } unless msg.content.empty?
+            elsif msg.content.is_a?(Array)
+              text_blocks = msg.content.select { |b| b["type"] == "text" }
+              tool_blocks = msg.content.select { |b| b["type"] == "tool_use" }
+
+              text = text_blocks.map { |b| b["text"] }.join
+              input << { role: "assistant", content: text } unless text.empty?
+
+              tool_blocks.each do |b|
+                args = b["input"].is_a?(String) ? b["input"] : b["input"].to_json
+                input << {
+                  type: "function_call",
+                  call_id: b["id"],
+                  name: b["name"],
+                  arguments: args
+                }
+              end
+            end
           else
             input << { role: msg.role.to_s, content: msg.content }
           end
