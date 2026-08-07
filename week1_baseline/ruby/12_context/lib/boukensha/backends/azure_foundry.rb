@@ -19,6 +19,11 @@ module Boukensha
           context_window: 400_000,
           cost_per_million: { input: 0.75, output: 4.5 },
           usage_unit: :tokens
+        },
+        "gpt-5.4-nano" => {
+          context_window: 400_000,
+          cost_per_million: { input: 0.2, output: 1.25 },
+          usage_unit: :tokens
         }
       }.freeze
 

@@ -1,7 +1,7 @@
 tasks:
   player:
     provider: azure_foundry
-    model: gpt-5.4-mini
+    model: gpt-5.4-nano
     prompt_override:
       system: true
 
