@@ -1,3 +1,23 @@
+# Baseline Agent Journal
+
+## Technical Goal
+
+It is necessary to develope a custom agentic harness caplable of navigating a [MUD](https://en.wikipedia.org/wiki/Multi-user_dungeon) (especifically [tbaMud](https://github.com/tbamud/tbamud)), the baseline agent should be generic enough to be used with kind of MUD so connections to the game should be handled separetaly.
+
+## Technical Uncertainty
+
+- Based on previous tests, generic harnesses cant't handle MUD connection reliably enough so a custom harness could be the solution to do this programatically to be considered in producction environments.
+- Generic harnesses can't hold long term memory effectively beyong their current session so specialized memory needs to be setup so the agent can learn about the MUD world and improve navigation between sessions.
+- A specialized agentic loop seems to be necessary so LLM's can laverage a feedback loop while navigatin the world and asking the user at the same time for specific instruccions so the agent can be ketp on its current objective.
+- LLM locking should not be a limitation for the custom harness so it makes sense any LLM could be used to match specific needs and to improve perfomance and cost.
+
+## Technical Hypotheses
+
+- If LLM or model selection must be implemented, its logic should be abstrated so the agent remain LLM agnostic and can talk with multiple models as necessary.
+- If a baseline agent is to be developed, it should be reduce to its basic components to remain modular and flexible. At the very least it should contain: **configuration**, **structure**, **registry**, **prompt builder**, **api client**, **agent loop**, **logger**, **dsl**, **repl loop**, **global executable**, **standard tool library** and **tui**
+
+## Technical Observations
+
 ![alt text](../src/assets/images/00_config.png) 
 
 ![alt text](../src/assets/images/01_struct_skeleton.png) 
@@ -297,3 +317,7 @@ In short: **it’s a streamlined agent framework for instructing an AI to use to
 ![alt text](../src/assets/images/11_tui.png)
 
 ![alt text](../src/assets/images/12_context.png)
+
+## Technical Conclusions
+
+## Key Takeaway
