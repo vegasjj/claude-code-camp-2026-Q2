@@ -2,27 +2,52 @@
 
 ## Technical Goal
 
-It is necessary to develope a custom agentic harness caplable of navigating a [MUD](https://en.wikipedia.org/wiki/Multi-user_dungeon) (especifically [tbaMud](https://github.com/tbamud/tbamud)), the baseline agent should be generic enough to be used with kind of MUD so connections to the game should be handled separetaly.
+It is necessary to develope a custom agentic harness caplable of navigating a [MUD](https://en.wikipedia.org/wiki/Multi-user_dungeon) (especifically [tbaMud](https://github.com/tbamud/tbamud)), the baseline agent should be generic enough to be used with any kind of MUD so connections to the game should be handled separetaly.
 
 ## Technical Uncertainty
 
-- Based on previous tests, generic harnesses cant't handle MUD connection reliably enough so a custom harness could be the solution to do this programatically to be considered in producction environments.
-- Generic harnesses can't hold long term memory effectively beyong their current session so specialized memory needs to be setup so the agent can learn about the MUD world and improve navigation between sessions.
-- A specialized agentic loop seems to be necessary so LLM's can laverage a feedback loop while navigatin the world and asking the user at the same time for specific instruccions so the agent can be ketp on its current objective.
+- Based on previous tests, generic harnesses cant't handle MUD connections reliably enough, so a custom harness could be the solution to do this programatically and be considered in production environments.
+- Even if a custom harness is fully implemented there's no warranty that it can suffitiently constrain an LLM to the task and hand or without major deviations.
+- Generic harnesses can't hold long term memory effectively beyong their current session so specialized memory migth be needed so the agent can learn about the MUD world and improve navigation between sessions.
+- A specialized agentic loop seems to be necessary so LLM's can laverage a feedback loop while navigating the world or requesting input from the user so the agent can be ketp on target.
 - LLM locking should not be a limitation for the custom harness so it makes sense any LLM could be used to match specific needs and to improve perfomance and cost.
 
 ## Technical Hypotheses
 
-- If LLM or model selection must be implemented, its logic should be abstrated so the agent remain LLM agnostic and can talk with multiple models as necessary.
-- If a baseline agent is to be developed, it should be reduce to its basic components to remain modular and flexible. At the very least it should contain: **configuration**, **structure**, **registry**, **prompt builder**, **api client**, **agent loop**, **logger**, **dsl**, **repl loop**, **global executable**, **standard tool library** and **tui**
+- If LLM or model selection must be implemented, its logic should be abstrated so the agent remain LLM agnostic and can talk with as many models as necessary.
+- If a baseline agent is to be developed, it should be reduce to its basic components to remain modular and flexible. At the very least it should contain: **configuration**, **basic structure**, **tool registry**, **prompt builder**, **model api client**, **agentic loop**, **logger**, **dsl**, **repl loop**, **global executable**, **standard tool library** and **tui**.
 
 ## Technical Observations
 
-![alt text](../src/assets/images/00_config.png) 
+A [base agentic harness](https://github.com/ExamProCo/claude-code-camp-2026-Q2) by **Andrew Brown**, called **Boukensha**, is used in this repo due to time constrains. Some modifications to the model backend logic were made to support **Microsoft Foundry** as an additional provider among other minor modifications that will be detailed when relevant.
 
-![alt text](../src/assets/images/01_struct_skeleton.png) 
+Each [module](../../week1_baseline/ruby/) is implemented and tested one at the time while carrying delta changes as progress is made to the [final version](../../week1_baseline/ruby/12_context/).
 
-![alt text](../src/assets/images/02_the_registry.png)
+### Config
+
+Basic agent harness configuration is based on access to configuration directory, provider and model to be used, system prompt, MUD credentials and connection details as well as API keys. 
+
+Bellow there's a capture with the output of a correct configuration using the **openai** provider and matching API keys:
+
+![Basic configuration output for Boukensha](../src/assets/images/00_config.png) 
+
+### Struct Skeleton
+
+The basic structure for an agent request is  based on message handling (user, assistant, etc.) during conversations and context or tool access:
+
+Bellow is the test output depicting the mentioned structure:
+
+![Struct Skeleton output for Boukensha](../src/assets/images/01_struct_skeleton.png) 
+
+### Registry
+
+This module manages tool registration and access based on the current task as well as error handling for calls to unregistered tools.
+
+Bellow is output of the module test showing the process of tool registering and dispatching (tool result):
+
+![Tool registering and dispatching output for Boukensha](../src/assets/images/02_the_registry.png)
+
+### API Client
 
 ```sh
 @vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/04_api_client 
