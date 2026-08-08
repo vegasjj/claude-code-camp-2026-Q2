@@ -482,6 +482,10 @@ The raw JSON files can be found in the [sessions](../../.boukensha/sessions/) di
 
  ### DSL
 
+This module offers improvements in the way the agent is called so is no longer needed to provide configuration, registry, backend, client, prompt builder or the agentic loop manually. Instead, a task (user prompt) is passed and all other components are automatically loaded.
+
+Bellow, you can see the output of Boukensha using the DSL logic to carry out an agent loop to learn and describe the purpose of this module:
+
 ```sh
 @vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/07_the_run_dsl 
 === BOUKENSHA Step 7: The Boukensha.run DSL ===
@@ -529,7 +533,17 @@ What it can do:
 In short: **it’s a streamlined agent framework for instructing an AI to use tools and carry out tasks, with the intended use case being a MUD-playing assistant that can explore, map, level, andfight.**
 ```
 
-![alt text](../src/assets/images/08_the_repl_loop.png)
+### REPL Loop
+
+This module makes use of the DSL logic to wrap a loop within a limited custom command line interface (which also support a few slash commands like `/clear` or `/exit`) in preparation for the full TUI logic that will be implemented later on.
+
+The user sends prompts (tasks) using the CLI and all other components are called automatically using DSL (tools still need to be wired manually at this point).
+
+Bellow, you can see a capture of the REPL interface (version 8) looping as it respond to users prompts:
+
+![REPL loop interface for Boukensha](../src/assets/images/08_the_repl_loop.png)
+
+### Global Executable
 
 ![alt text](../src/assets/images/09_global_executable.png)
 
