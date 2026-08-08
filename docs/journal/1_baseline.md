@@ -47,6 +47,66 @@ Bellow is output of the module test showing the process of tool registering and 
 
 ![Tool registering and dispatching output for Boukensha](../src/assets/images/02_the_registry.png)
 
+### Prompt Builder
+
+```sh
+@vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/03_prompt_builder 
+=== BOUKENSHA Step 3: Prompt Builder ===
+
+Config: #<Boukensha::Config dir=/workspaces/claude-code-camp-2026-Q2/.boukensha tasks=player>
+Provider: azure_foundry
+Model: gpt-5.4-mini
+{
+  "model": "gpt-5.4-mini",
+  "instructions": "# System Prompt\n\nYou are a MUD explorer currently tasked to play TbaMUD. Your primary purpose is to follow instruction within the MUD to move, map, level-up, and fight enemies.",
+  "input": [
+    {
+      "role": "user",
+      "content": "I just arrived in the dungeon. What's around me, and can you move north?"
+    },
+    {
+      "role": "assistant",
+      "content": "Let me take a look around first."
+    },
+    {
+      "type": "function_call_output",
+      "call_id": "toolu_01X",
+      "output": "A damp stone corridor stretches north. Torches flicker on the walls."
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "name": "look",
+      "description": "Look around the current room for details",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "type": "function",
+      "name": "move",
+      "description": "Move the player in a direction (north, south, east, west, up, down)",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "description": "The direction to move"
+          }
+        },
+        "required": [
+          "direction"
+        ]
+      }
+    }
+  ],
+  "max_output_tokens": 1024
+}
+```
+
 ### API Client
 
 ```sh
