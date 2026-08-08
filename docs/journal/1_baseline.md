@@ -49,6 +49,128 @@ Bellow is output of the module test showing the process of tool registering and 
 
 ### Prompt Builder
 
+This module builds a prompt format (which is model agnostic) used by Boukensha before sending it to the api client in each request. This way the [backend logic](../../week1_baseline/ruby/03_prompt_builder/lib/boukensha/backends/) with each individual LLM configuration remains modular, flexible and scalable according to user needs.
+
+Due to geo-blocking is not possible for me to use Anthropic's or OpenAI's models directly and the Gemini API is only accesible with prepaid credits. 
+
+In order to use a pay-as-you-go scheme having complete control of cost my only option was to use OpenAI through **Microsoft Foundry**, so I proposed a [plan](../plans/week_1/azure_foundry_backend/azure_foundry_backend_plan.md) to add an additional backend called [azure_foundry](../../week1_baseline/ruby/03_prompt_builder/lib/boukensha/backends/azure_foundry.rb), which is a modified version of the openai backend with support for Microsof Foundry deployments (unique URL based on foundry resources, deployment names that not always reflect the model name, ect.) and revised formating to use the more current responses API instead of the chat completions API:
+
+```rb
+require "json"
+require_relative "base"
+
+module Boukensha
+  module Backends
+    class AzureFoundry < Base
+      MODELS = {
+        "gpt-5.5" => {
+          context_window: 1_000_000,
+          cost_per_million: { input: 5.0, output: 30.0 },
+          usage_unit: :tokens
+        },
+        "gpt-5.4" => {
+          context_window: 1_000_000,
+          cost_per_million: { input: 2.5, output: 15.0 },
+          usage_unit: :tokens
+        },
+        "gpt-5.4-mini" => {
+          context_window: 400_000,
+          cost_per_million: { input: 0.75, output: 4.5 },
+          usage_unit: :tokens
+        }
+      }.freeze
+
+      def initialize(api_key:, endpoint:, model:)
+        @api_key  = api_key
+        @endpoint = endpoint.chomp("/")
+        configure_model(model)
+      end
+
+      def to_messages(system, messages)
+        input = []
+
+        messages.each do |msg|
+          case msg.role
+          when :tool_result
+            input << {
+              type: "function_call_output",
+              call_id: msg.tool_use_id,
+              output: msg.content
+            }
+          when :assistant
+            if msg.content.is_a?(String)
+              input << { role: "assistant", content: msg.content } unless msg.content.empty?
+            elsif msg.content.is_a?(Array)
+              text_blocks = msg.content.select { |b| b["type"] == "text" }
+              tool_blocks = msg.content.select { |b| b["type"] == "tool_use" }
+
+              text = text_blocks.map { |b| b["text"] }.join
+              input << { role: "assistant", content: text } unless text.empty?
+
+              tool_blocks.each do |b|
+                args = b["input"].is_a?(String) ? b["input"] : b["input"].to_json
+                input << {
+                  type: "function_call",
+                  call_id: b["id"],
+                  name: b["name"],
+                  arguments: args
+                }
+              end
+            end
+          else
+            input << { role: msg.role.to_s, content: msg.content }
+          end
+        end
+
+        input
+      end
+
+      def to_tools(tools)
+        tools.values.map do |tool|
+          {
+            type: "function",
+            name: tool.name,
+            description: tool.description,
+            parameters: {
+              type: "object",
+              properties: tool.parameters,
+              required: tool.parameters.keys.map(&:to_s)
+            }
+          }
+        end
+      end
+
+      def to_payload(context, max_output_tokens: 1024)
+        payload = {
+          model: @model,
+          instructions: context.system,
+          input: to_messages(context.system, context.messages),
+          tools: to_tools(context.tools),
+          max_output_tokens: max_output_tokens
+        }
+
+        payload.delete(:instructions) if context.system.nil? || context.system.empty?
+        payload
+      end
+
+      def headers
+        {
+          "Content-Type" => "application/json",
+          "api-key"      => @api_key
+        }
+      end
+
+      def url
+        "#{@endpoint}/openai/v1/responses"
+      end
+    end
+  end
+end
+
+```
+
+Bellow is the test output for this module which mocks the model agnostic prompt for Boukensha using the **azure_foundry** backend:
+
 ```sh
 @vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/03_prompt_builder 
 === BOUKENSHA Step 3: Prompt Builder ===
@@ -108,6 +230,10 @@ Model: gpt-5.4-mini
 ```
 
 ### API Client
+
+This module is in charge of sending the final payload of every requests to the selected provider and model making use of the configuration, tool registring logic and prompt formating detailed above while it waits to receive the answer.
+
+Bellow is the test output for this module which shows the raw response of a function call using the **azure_foundry** provider.
 
 ```sh
 @vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/04_api_client 
@@ -295,6 +421,12 @@ Raw response:
 }
 ```
 
+### Agent Loop
+
+This a crucial module which is in charge of looping through multiple requests and responses until it provides the answer to the user's prompt. All previous modules are used by the agentic loop to handle each request appropiatly.
+
+In the output bellow, we can see the output of an agentic loop that receives the task to read a file, making a tool call (`read_file`) and then looping when receving the tool result so it can provide the requested answer to the user.
+
 ```sh
 @vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/05_agent_loop 
 === BOUKENSHA Step 5: Agent Loop ===
@@ -342,9 +474,13 @@ This framework, **BOUKENSHA**, is a MUD-player assistant that provides an **agen
 In short: it’s an **LLM-driven automation framework** built to let a game-playing assistant act through tools in a controlled loop, with support for multiple model providers and task-specific behavior.
 ```
 
-[sessions](../../.boukensha/sessions/)
+### Logger
 
-[log visualizer](../../week1_baseline/log_viz/)
+This module is tasked with generating raw JSON files with each session details so it can mantain a log library for telemetry and visibility of the agent behavior.
+
+The raw JSON files can be found in the [sessions](../../.boukensha/sessions/) directory and can be visualized with a user friendly interface using the [log visualizer](../../week1_baseline/log_viz/).
+
+ ### DSL
 
 ```sh
 @vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/07_the_run_dsl 
