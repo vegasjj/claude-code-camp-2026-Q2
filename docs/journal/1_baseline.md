@@ -1,5 +1,27 @@
 # Baseline Agent Journal
 
+## Index
+
+- [Technical Goal](#technical-goal)
+- [Technical Uncertainty](#technical-uncertainty)
+- [Technical Hypotheses](#technical-hypotheses)
+- [Technical Observations](#technical-observations)
+  - [Config](#config)
+  - [Struct Skeleton](#struct-skeleton)
+  - [Registry](#registry)
+  - [Prompt Builder](#prompt-builder)
+  - [API Client](#api-client)
+  - [Agent Loop](#agent-loop)
+  - [Logger](#logger)
+  - [DSL](#dsl)
+  - [REPL Loop](#repl-loop)
+  - [Global Executable](#global-executable)
+  - [Standard Tool Library](#standard-tool-library)
+  - [TUI](#tui)
+  - [Context](#context)
+- [Technical Conclusions](#technical-conclusions)
+- [Key Takeaway](#key-takeaway)
+
 ## Technical Goal
 
 It is necessary to develop a custom agentic harness capable of navigating a [MUD](https://en.wikipedia.org/wiki/Multi-user_dungeon) (specifically [tbaMud](https://github.com/tbamud/tbamud)), the baseline agent should be generic enough to be used with any kind of MUD so connections to the game should be handled separately.
