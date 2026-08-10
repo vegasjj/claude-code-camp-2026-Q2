@@ -569,7 +569,7 @@ Boukensha now fully supports a terminal user interface (TUI) which loads all pre
 
 ### Context
 
-Boukensha (**version 12**) now support context visualization in the current session so is clear when the limit is approaching so action to compact either manually or automatically:
+Boukensha (**version 12**) now supports `gpt-5.4-nano` via a modification in the `azure_foundry` backend ([see plan](../plans/week_1/gpt_5.4_nano%20model/add_gpt54_nano_to_azure_foundry.md)) to reduce cost in longer sessions while testing. Also, context visualization in the current session is added so is clear when the limit is approaching so action to compact is taken either manually or automatically:
 
 ![Output of Boukensha latest version](../src/assets/images/12_context.png)
 
