@@ -2,19 +2,19 @@
 
 ## Technical Goal
 
-It is necessary to develope a custom agentic harness caplable of navigating a [MUD](https://en.wikipedia.org/wiki/Multi-user_dungeon) (especifically [tbaMud](https://github.com/tbamud/tbamud)), the baseline agent should be generic enough to be used with any kind of MUD so connections to the game should be handled separetaly.
+It is necessary to develop a custom agentic harness capable of navigating a [MUD](https://en.wikipedia.org/wiki/Multi-user_dungeon) (specifically [tbaMud](https://github.com/tbamud/tbamud)), the baseline agent should be generic enough to be used with any kind of MUD so connections to the game should be handled separately.
 
 ## Technical Uncertainty
 
-- Based on previous tests, generic harnesses cant't handle MUD connections reliably enough, so a custom harness could be the solution to do this programatically and be considered in production environments.
-- Even if a custom harness is fully implemented there's no warranty that it can suffitiently constrain an LLM to the task and hand or without major deviations.
-- Generic harnesses can't hold long term memory effectively beyong their current session so specialized memory migth be needed so the agent can learn about the MUD world and improve navigation between sessions.
-- A specialized agentic loop seems to be necessary so LLM's can laverage a feedback loop while navigating the world or requesting input from the user so the agent can be ketp on target.
-- LLM locking should not be a limitation for the custom harness so it makes sense any LLM could be used to match specific needs and to improve perfomance and cost.
+- Based on previous tests, generic harnesses cant't handle MUD connections reliably enough, so a custom harness could be the solution to do this programmatically and be considered in production environments.
+- Even if a custom harness is fully implemented there's no warranty that it can sufficiently constrain an LLM to the task and hand or without major deviations.
+- Generic harnesses can't hold long term memory effectively beyond their current session so specialized memory might be needed so the agent can learn about the MUD world and improve navigation between sessions.
+- A specialized agentic loop seems to be necessary so LLM's can leverage a feedback loop while navigating the world or requesting input from the user so the agent can be kept on target.
+- LLM locking should not be a limitation for the custom harness so it makes sense any LLM could be used to match specific needs and to improve performance and cost.
 
 ## Technical Hypotheses
 
-- If LLM or model selection must be implemented, its logic should be abstrated so the agent remain LLM agnostic and can talk with as many models as necessary.
+- If LLM or model selection must be implemented, its logic should be abstracted so the agent remain LLM agnostic and can talk with as many models as necessary.
 - If a baseline agent is to be developed, it should be reduce to its basic components to remain modular and flexible. At the very least it should contain: **configuration**, **basic structure**, **tool registry**, **prompt builder**, **model api client**, **agentic loop**, **logger**, **dsl**, **repl loop**, **global executable**, **standard tool library** and **tui**.
 
 ## Technical Observations
@@ -25,11 +25,11 @@ Each [module](../../week1_baseline/ruby/) is implemented and tested one at the t
 
 ### Config
 
-Basic agent harness configuration is based on access to configuration directory, provider and model to be used, system prompt, MUD credentials and connection details as well as API keys. 
+Basic agent harness configuration is based on access to configuration directory, provider and model to be used, system prompt, MUD credentials and connection details as well as API keys.
 
 Bellow there's a capture with the output of a correct configuration using the **openai** provider and matching API keys:
 
-![Basic configuration output for Boukensha](../src/assets/images/00_config.png) 
+![Basic configuration output for Boukensha](../src/assets/images/00_config.png)
 
 ### Struct Skeleton
 
@@ -37,7 +37,7 @@ The basic structure for an agent request is  based on message handling (user, as
 
 Bellow is the test output depicting the mentioned structure:
 
-![Struct Skeleton output for Boukensha](../src/assets/images/01_struct_skeleton.png) 
+![Struct Skeleton output for Boukensha](../src/assets/images/01_struct_skeleton.png)
 
 ### Registry
 
@@ -51,9 +51,9 @@ Bellow is output of the module test showing the process of tool registering and 
 
 This module builds a prompt format (which is model agnostic) used by Boukensha before sending it to the api client in each request. This way the [backend logic](../../week1_baseline/ruby/03_prompt_builder/lib/boukensha/backends/) with each individual LLM configuration remains modular, flexible and scalable according to user needs.
 
-Due to geo-blocking is not possible for me to use Anthropic's or OpenAI's models directly and the Gemini API is only accesible with prepaid credits. 
+Due to geo-blocking is not possible for me to use Anthropic's or OpenAI's models directly and the Gemini API is only accessible with prepaid credits.
 
-In order to use a pay-as-you-go scheme having complete control of cost my only option was to use OpenAI through **Microsoft Foundry**, so I proposed a [plan](../plans/week_1/azure_foundry_backend/azure_foundry_backend_plan.md) to add an additional backend called [azure_foundry](../../week1_baseline/ruby/03_prompt_builder/lib/boukensha/backends/azure_foundry.rb), which is a modified version of the openai backend with support for Microsof Foundry deployments (unique URL based on foundry resources, deployment names that not always reflect the model name, ect.) and revised formating to use the more current responses API instead of the chat completions API:
+In order to use a pay-as-you-go scheme having complete control of cost my only option was to use OpenAI through **Microsoft Foundry**, so I proposed a [plan](../plans/week_1/azure_foundry_backend/azure_foundry_backend_plan.md) to add an additional backend called [azure_foundry](../../week1_baseline/ruby/03_prompt_builder/lib/boukensha/backends/azure_foundry.rb), which is a modified version of the openai backend with support for Microsoft Foundry deployments (unique URL based on foundry resources, deployment names that not always reflect the model name, ect.) and revised formatting to use the more current responses API instead of the chat completions API:
 
 ```rb
 require "json"
@@ -231,7 +231,7 @@ Model: gpt-5.4-mini
 
 ### API Client
 
-This module is in charge of sending the final payload of every requests to the selected provider and model making use of the configuration, tool registring logic and prompt formating detailed above while it waits to receive the answer.
+This module is in charge of sending the final payload of every requests to the selected provider and model making use of the configuration, tool registering logic and prompt formatting detailed above while it waits to receive the answer.
 
 Bellow is the test output for this module which shows the raw response of a function call using the **azure_foundry** provider.
 
@@ -423,9 +423,9 @@ Raw response:
 
 ### Agent Loop
 
-This a crucial module which is in charge of looping through multiple requests and responses until it provides the answer to the user's prompt. All previous modules are used by the agentic loop to handle each request appropiatly.
+This a crucial module which is in charge of looping through multiple requests and responses until it provides the answer to the user's prompt. All previous modules are used by the agentic loop to handle each request appropriately.
 
-In the output bellow, we can see the output of an agentic loop that receives the task to read a file, making a tool call (`read_file`) and then looping when receving the tool result so it can provide the requested answer to the user.
+In the output bellow, we can see the output of an agentic loop that receives the task to read a file, making a tool call (`read_file`) and then looping when receiving the tool result so it can provide the requested answer to the user.
 
 ```sh
 @vegasjj ➜ /workspaces/claude-code-camp-2026-Q2/week1_baseline (main) $ ./bin/ruby/05_agent_loop 
@@ -476,11 +476,11 @@ In short: it’s an **LLM-driven automation framework** built to let a game-play
 
 ### Logger
 
-This module is tasked with generating raw JSON files with each session details so it can mantain a log library for telemetry and visibility of the agent behavior.
+This module is tasked with generating raw JSON files with each session details so it can maintain a log library for telemetry and visibility of the agent behavior.
 
 The raw JSON files can be found in the [sessions](../../.boukensha/sessions/) directory and can be visualized with a user friendly interface using the [log visualizer](../../week1_baseline/log_viz/).
 
- ### DSL
+### DSL
 
 This module offers improvements in the way the agent is called so is no longer needed to provide configuration, registry, backend, client, prompt builder or the agentic loop manually. Instead, a task (user prompt) is passed and all other components are automatically loaded.
 
@@ -547,7 +547,7 @@ Bellow, you can see a capture of the REPL interface (**version 8**) looping as i
 
 At this point, a Ruby gem executable is created with all the modules and changes made until now using [boukensha.gemspec](../../week1_baseline/ruby/09_global_executable/boukensha.gemspec).
 
-To load a different module the `BOUKENSHA_PATH` environment varioble must be set of added to the `.boukensharc` file. Initialy Andrew Brown's implementation didn't include logic to account for BOUKENSHA's configuration path lookup so it had to be modified (now `.boukensharc` also recognizes `BOUKENSHA_DIR` to support this expelicitedly).
+To load a different module the `BOUKENSHA_PATH` environment variable must be set of added to the `.boukensharc` file. Initially Andrew Brown's implementation didn't include logic to account for BOUKENSHA's configuration path lookup so it had to be modified (now `.boukensharc` also recognizes `BOUKENSHA_DIR` to support this explicitly).
 
 Bellow, you can see the the output the `boukensha` command (**version 9**) making use of the `.boukensharc` file to point to the required paths stated above:
 
@@ -555,11 +555,11 @@ Bellow, you can see the the output the `boukensha` command (**version 9**) makin
 
 ### Standard Tool Library
 
-Improvements are made be including the [tools module](../../week1_baseline/ruby/10_standard_tool_library/lib/boukensha/tools/) where various tool libraries can be loaded including one [specifically to connect and play tbaMud](../../week1_baseline/ruby/10_standard_tool_library/lib/boukensha/tools/mud.rb). Now, there is no need to register ad hoc tools every time Boukensha in run as they become availabe inmediatly when the boukensha executable (which now requires the [mud_manager](../../week0_explore/mud_manager/) gem) is called.
+Improvements are made be including the [tools module](../../week1_baseline/ruby/10_standard_tool_library/lib/boukensha/tools/) where various tool libraries can be loaded including one [specifically to connect and play tbaMud](../../week1_baseline/ruby/10_standard_tool_library/lib/boukensha/tools/mud.rb). Now, there is no need to register ad hoc tools every time Boukensha in run as they become available immediately when the boukensha executable (which now requires the [mud_manager](../../week0_explore/mud_manager/) gem) is called.
 
 Bellow, you can see the logs of a session where Boukensha connects and navigate tbaMud making use of the standard tool library:
 
-![Logs of Boukensha navigating tbaMud using stadard tools](../src/assets/images/10_standard_tool_library.png)
+![Logs of Boukensha navigating tbaMud using standard tools](../src/assets/images/10_standard_tool_library.png)
 
 ### TUI
 
@@ -571,14 +571,14 @@ Boukensha now fully supports a terminal user interface (TUI) which loads all pre
 
 Boukensha (**version 12**) now support context visualization in the current session so is clear when the limit is approaching so action to compact either manually or automatically:
 
-![Output of Boukansha latest version](../src/assets/images/12_context.png)
+![Output of Boukensha latest version](../src/assets/images/12_context.png)
 
 ## Technical Conclusions
 
 - The modular approach to develop Boukensha proved flexible enough to be considered a baseline agentic harness which could be potentially adapted to other uses cases other than MUD navigation and exploration by loading tool libraries and providers (backends) as this situation arises.
-- As the interface with tbaMud is now programatically built, reliability and consistency while connecting to the game is warratied, however, efficiency while navigating the MUD is yet to be achieved to optimize token use, effort and time to target.
-- As this is a baseline agent, specialized memory implemetation is still pending so Boukensha can take advantage of previoius interactions to optimize navitagation.
-- The feedback loop created for Boukensha is capable of mantain relevant context of the task at hand, but often requires handholding from the user's part so it can understand specific tabMud machanics which are required to advance in the game. 
+- As the interface with tbaMud is now programmatically built, reliability and consistency while connecting to the game is warrantied, however, efficiency while navigating the MUD is yet to be achieved to optimize token use, effort and time to target.
+- As this is a baseline agent, specialized memory implementation is still pending so Boukensha can take advantage of previous interactions to optimize navigation.
+- The feedback loop created for Boukensha is capable of maintain relevant context of the task at hand, but often requires handholding from the user's part so it can understand specific tabMud mechanics which are required to advance in the game.
 
 ## Key Takeaway
 
