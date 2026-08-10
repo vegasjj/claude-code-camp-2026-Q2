@@ -539,20 +539,47 @@ This module makes use of the DSL logic to wrap a loop within a limited custom co
 
 The user sends prompts (tasks) using the CLI and all other components are called automatically using DSL (tools still need to be wired manually at this point).
 
-Bellow, you can see a capture of the REPL interface (version 8) looping as it respond to users prompts:
+Bellow, you can see a capture of the REPL interface (**version 8**) looping as it respond to users prompts:
 
 ![REPL loop interface for Boukensha](../src/assets/images/08_the_repl_loop.png)
 
 ### Global Executable
 
-![alt text](../src/assets/images/09_global_executable.png)
+At this point, a Ruby gem executable is created with all the modules and changes made until now using [boukensha.gemspec](../../week1_baseline/ruby/09_global_executable/boukensha.gemspec).
 
-![alt text](../src/assets/images/10_standard_tool_library.png)
+To load a different module the `BOUKENSHA_PATH` environment varioble must be set of added to the `.boukensharc` file. Initialy Andrew Brown's implementation didn't include logic to account for BOUKENSHA's configuration path lookup so it had to be modified (now `.boukensharc` also recognizes `BOUKENSHA_DIR` to support this expelicitedly).
 
-![alt text](../src/assets/images/11_tui.png)
+Bellow, you can see the the output the `boukensha` command (**version 9**) making use of the `.boukensharc` file to point to the required paths stated above:
 
-![alt text](../src/assets/images/12_context.png)
+![Executable output for Boukensha](../src/assets/images/09_global_executable.png)
+
+### Standard Tool Library
+
+Improvements are made be including the [tools module](../../week1_baseline/ruby/10_standard_tool_library/lib/boukensha/tools/) where various tool libraries can be loaded including one [specifically to connect and play tbaMud](../../week1_baseline/ruby/10_standard_tool_library/lib/boukensha/tools/mud.rb). Now, there is no need to register ad hoc tools every time Boukensha in run as they become availabe inmediatly when the boukensha executable (which now requires the [mud_manager](../../week0_explore/mud_manager/) gem) is called.
+
+Bellow, you can see the logs of a session where Boukensha connects and navigate tbaMud making use of the standard tool library:
+
+![Logs of Boukensha navigating tbaMud using stadard tools](../src/assets/images/10_standard_tool_library.png)
+
+### TUI
+
+Boukensha now fully supports a terminal user interface (TUI) which loads all previous features (**version 11**) and requires the `charm` gem when building the global executable:
+
+![Output of the TUI for Boukensha](../src/assets/images/11_tui.png)
+
+### Context
+
+Boukensha (**version 12**) now support context visualization in the current session so is clear when the limit is approaching so action to compact either manually or automatically:
+
+![Output of Boukansha latest version](../src/assets/images/12_context.png)
 
 ## Technical Conclusions
 
+- The modular approach to develop Boukensha proved flexible enough to be considered a baseline agentic harness which could be potentially adapted to other uses cases other than MUD navigation and exploration by loading tool libraries and providers (backends) as this situation arises.
+- As the interface with tbaMud is now programatically built, reliability and consistency while connecting to the game is warratied, however, efficiency while navigating the MUD is yet to be achieved to optimize token use, effort and time to target.
+- As this is a baseline agent, specialized memory implemetation is still pending so Boukensha can take advantage of previoius interactions to optimize navitagation.
+- The feedback loop created for Boukensha is capable of mantain relevant context of the task at hand, but often requires handholding from the user's part so it can understand specific tabMud machanics which are required to advance in the game. 
+
 ## Key Takeaway
+
+The baseline agent needs further improvement so it can understand the current use case mechanics effectively without to much intervention from the user and in way that is efficient either in navigating or exploring the MUD as well as optimizing costs.
